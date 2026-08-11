@@ -645,18 +645,18 @@
               <div class="field-row">
                 <div class="field">
                   <label for="parentName">Parent / Guardian name</label>
-                  <input type="text" id="parentName" name="parentName" required autocomplete="name">
+                  <input type="text" id="parentName" name="Parent / Guardian Name" required autocomplete="name">
                 </div>
                 <div class="field">
                   <label for="childName">Child's name</label>
-                  <input type="text" id="childName" name="childName" required>
+                  <input type="text" id="childName" name="Child Name" required>
                 </div>
               </div>
 
               <div class="field-row">
                 <div class="field">
                   <label for="childDob">Child's date of birth</label>
-                  <input type="date" id="childDob" name="childDob" required>
+                  <input type="date" id="childDob" name="Child Date of Birth" required>
                 </div>
                 <div class="field">
                   <label for="currentSchoolYear">Current school year <span class="hint">(if applicable)</span></label>
@@ -710,21 +710,21 @@
               <div class="field-row">
                 <div class="field">
                   <label for="phone">Phone number</label>
-                  <input type="tel" id="phone" name="phone" required autocomplete="tel">
+                  <input type="tel" id="phone" name="Phone Number" required autocomplete="tel">
                 </div>
                 <div class="field">
                   <label for="email">Email address</label>
-                  <input type="email" id="email" name="email" required autocomplete="email">
+                  <input type="email" id="email" name="Email" required autocomplete="email">
                 </div>
               </div>
 
               <div class="field">
                 <label for="additionalInfo">Additional information <span class="hint">(optional)</span></label>
-                <textarea id="additionalInfo" name="additionalInfo" placeholder="Anything else we should know?"></textarea>
+                <textarea id="additionalInfo" name="Additional Information" placeholder="Anything else we should know?"></textarea>
               </div>
 
               <div class="consent-row">
-                <input type="checkbox" id="consentEoi" required>
+                <input type="checkbox" id="consentEoi" name="Marketing Consent" value="Yes" required>
                 <label for="consentEoi">I'd like to receive updates from LEAP Tuition &amp; Early Learning about enrolments and Foundation Family offers.</label>
               </div>
 
@@ -745,26 +745,26 @@
               <div class="field-row">
                 <div class="field">
                   <label for="enqName">Parent / Guardian name</label>
-                  <input type="text" id="enqName" name="enqName" required>
+                  <input type="text" id="enqName" name="Parent / Guardian Name" required>
                 </div>
                 <div class="field">
                   <label for="enqYear">Child's current year level</label>
-                  <input type="text" id="enqYear" name="enqYear" placeholder="e.g. Year 4">
+                  <input type="text" id="enqYear" name="Child Current Year Level" placeholder="e.g. Year 4">
                 </div>
               </div>
               <div class="field-row">
                 <div class="field">
                   <label for="enqPhone">Phone number</label>
-                  <input type="tel" id="enqPhone" name="enqPhone" required>
+                  <input type="tel" id="enqPhone" name="Phone Number" required>
                 </div>
                 <div class="field">
                   <label for="enqEmail">Email address</label>
-                  <input type="email" id="enqEmail" name="enqEmail" required>
+                  <input type="email" id="enqEmail" name="Email" required>
                 </div>
               </div>
               <div class="field">
                 <label for="enqGoals">What are your child's learning goals?</label>
-                <textarea id="enqGoals" name="enqGoals" placeholder="e.g. building confidence in reading, catching up on maths…"></textarea>
+                <textarea id="enqGoals" name="Child Learning Goals" placeholder="e.g. building confidence in reading, catching up on maths…"></textarea>
               </div>
               <button type="submit" class="btn btn-gold btn-block">Send enquiry</button>
             </form>
@@ -921,26 +921,65 @@
     });
   });
 
-  /* Form submit handling (front-end only — see note below) */
-  function wireForm(formId, successId){
+  /* Form submit handling — sends submissions to LEAP email via FormSubmit */
+  var FORM_ENDPOINT = 'https://formsubmit.co/ajax/leaptuition.earlylearning@gmail.com';
+
+  function wireForm(formId, successId, subject){
     var form = document.getElementById(formId);
     var success = document.getElementById(successId);
     if(!form) return;
-    form.addEventListener('submit', function(e){
+
+    form.addEventListener('submit', async function(e){
       e.preventDefault();
+
       if(!form.checkValidity()){
         form.reportValidity();
         return;
       }
-      form.style.display = 'none';
-      success.classList.add('show');
+
+      var submitBtn = form.querySelector('button[type="submit"]');
+      var originalText = submitBtn ? submitBtn.textContent : '';
+      if(submitBtn){
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Sending…';
+      }
+
+      var data = new FormData(form);
+      data.append('_subject', subject);
+      data.append('_template', 'table');
+      data.append('_captcha', 'false');
+
+      /* Make the visitor's email usable as Reply-To where supported. */
+      var visitorEmail = data.get('Email');
+      if(visitorEmail) data.append('_replyto', visitorEmail);
+
+      try {
+        var response = await fetch(FORM_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: data
+        });
+
+        var result = await response.json().catch(function(){ return {}; });
+
+        if(!response.ok || result.success === 'false' || result.success === false){
+          throw new Error(result.message || 'Submission failed');
+        }
+
+        form.reset();
+        form.style.display = 'none';
+        success.classList.add('show');
+      } catch (error) {
+        console.error('LEAP form submission error:', error);
+        alert('Sorry, your form could not be sent. Please email us directly at leaptuition.earlylearning@gmail.com or try again.');
+      } finally {
+        if(submitBtn){
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalText;
+        }
+      }
     });
   }
-  wireForm('eoiForm', 'eoiSuccess');
-  wireForm('enquiryForm', 'enquirySuccess');
-})();
-</script>
-</body>
-</html>
-leap-tuition-eoi.html
-Displaying leap-tuition-eoi.html.
+
+  wireForm('eoiForm', 'eoiSuccess', 'New LEAP Expression of Interest');
+  wireForm('enquiryForm', 'enquirySuccess', 'New LEAP Tutoring Enquiry');
