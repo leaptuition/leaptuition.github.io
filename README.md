@@ -1,4 +1,3 @@
-
 <html lang="en-AU">
 <head>
 <meta charset="UTF-8">
@@ -801,7 +800,7 @@
         <p style="margin-top:14px; max-width:34ch;">Tuition &amp; Early Learning — Learn • Engage • Aspire • Prepare. Opening in Seven Hills, early 2027.</p>
         <div class="socials">
           <a href="https://www.instagram.com/leap.tuition/" target="_blank" rel="noopener noreferrer" aria-label="LEAP on Instagram"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
-          <a href="#" aria-label="LEAP on Facebook"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3Z"/></svg></a>
+          <a href="https://www.facebook.com/profile.php?id=61578554334975" target="_blank" rel="noopener noreferrer" aria-label="LEAP on Facebook"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3Z"/></svg></a>
         </div>
       </div>
 
