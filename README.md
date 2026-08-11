@@ -1,15 +1,3 @@
-None selected
-
-Skip to content
-Using Gmail with screen readers
-Enable desktop notifications for Gmail.
-   OK  No thanks
-Conversations
-0% of 15 GB used
-Terms · Privacy · Program Policies
-Last account activity: 54 minutes ago
-Details
-<!DOCTYPE html>
 <html lang="en-AU">
 <head>
 <meta charset="UTF-8">
