@@ -1,3 +1,4 @@
+
 <html lang="en-AU">
 <head>
 <meta charset="UTF-8">
@@ -641,7 +642,12 @@
 
           <!-- EOI PANEL -->
           <div class="tab-panel" id="tabEoi" role="tabpanel" aria-labelledby="tabEoiBtn">
-            <form id="eoiForm" novalidate>
+            <form id="eoiForm" action="https://formsubmit.co/leaptuition.earlylearning@gmail.com" method="POST">
+              <input type="hidden" name="_subject" value="New LEAP Expression of Interest">
+              <input type="hidden" name="_template" value="table">
+              <input type="hidden" name="_next" value="https://www.leaptuitionandearlylearning.au/?submitted=eoi#prepare">
+              <input type="hidden" name="_url" value="https://www.leaptuitionandearlylearning.au/">
+              <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
               <div class="field-row">
                 <div class="field">
                   <label for="parentName">Parent / Guardian name</label>
@@ -741,7 +747,12 @@
           <!-- TUTORING ENQUIRY PANEL -->
           <div class="tab-panel" id="tabEnquiry" role="tabpanel" aria-labelledby="tabEnquiryBtn" hidden>
             <p style="color:var(--ink-soft); margin-top:0;">Looking for personalised support for your child right now? Tell us a little about their learning goals and we'll be in touch to recommend the most suitable program.</p>
-            <form id="enquiryForm" novalidate>
+            <form id="enquiryForm" action="https://formsubmit.co/leaptuition.earlylearning@gmail.com" method="POST">
+              <input type="hidden" name="_subject" value="New LEAP Tutoring Enquiry">
+              <input type="hidden" name="_template" value="table">
+              <input type="hidden" name="_next" value="https://www.leaptuitionandearlylearning.au/?submitted=enquiry#prepare">
+              <input type="hidden" name="_url" value="https://www.leaptuitionandearlylearning.au/">
+              <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
               <div class="field-row">
                 <div class="field">
                   <label for="enqName">Parent / Guardian name</label>
@@ -789,7 +800,7 @@
         <span class="brand-mark"><span class="l">L</span><span class="e">E</span><span class="a">A</span><span class="p">P</span></span>
         <p style="margin-top:14px; max-width:34ch;">Tuition &amp; Early Learning — Learn • Engage • Aspire • Prepare. Opening in Seven Hills, early 2027.</p>
         <div class="socials">
-          <a href="#" aria-label="LEAP on Instagram"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
+          <a href="https://www.instagram.com/leap.tuition/" target="_blank" rel="noopener noreferrer" aria-label="LEAP on Instagram"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1"/></svg></a>
           <a href="#" aria-label="LEAP on Facebook"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3Z"/></svg></a>
         </div>
       </div>
@@ -921,65 +932,28 @@
     });
   });
 
-  /* Form submit handling — sends submissions to LEAP email via FormSubmit */
-  var FORM_ENDPOINT = 'https://formsubmit.co/ajax/leaptuition.earlylearning@gmail.com';
+  /* Direct FormSubmit POST handling.
+     After FormSubmit accepts the form, it redirects back here with ?submitted=... */
+  var submittedType = new URLSearchParams(window.location.search).get('submitted');
 
-  function wireForm(formId, successId, subject){
-    var form = document.getElementById(formId);
-    var success = document.getElementById(successId);
-    if(!form) return;
-
-    form.addEventListener('submit', async function(e){
-      e.preventDefault();
-
-      if(!form.checkValidity()){
-        form.reportValidity();
-        return;
-      }
-
-      var submitBtn = form.querySelector('button[type="submit"]');
-      var originalText = submitBtn ? submitBtn.textContent : '';
-      if(submitBtn){
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Sending…';
-      }
-
-      var data = new FormData(form);
-      data.append('_subject', subject);
-      data.append('_template', 'table');
-      data.append('_captcha', 'false');
-
-      /* Make the visitor's email usable as Reply-To where supported. */
-      var visitorEmail = data.get('Email');
-      if(visitorEmail) data.append('_replyto', visitorEmail);
-
-      try {
-        var response = await fetch(FORM_ENDPOINT, {
-          method: 'POST',
-          headers: { 'Accept': 'application/json' },
-          body: data
-        });
-
-        var result = await response.json().catch(function(){ return {}; });
-
-        if(!response.ok || result.success === 'false' || result.success === false){
-          throw new Error(result.message || 'Submission failed');
-        }
-
-        form.reset();
-        form.style.display = 'none';
-        success.classList.add('show');
-      } catch (error) {
-        console.error('LEAP form submission error:', error);
-        alert('Sorry, your form could not be sent. Please email us directly at leaptuition.earlylearning@gmail.com or try again.');
-      } finally {
-        if(submitBtn){
-          submitBtn.disabled = false;
-          submitBtn.textContent = originalText;
-        }
-      }
-    });
+  if(submittedType === 'eoi'){
+    var eoiForm = document.getElementById('eoiForm');
+    var eoiSuccess = document.getElementById('eoiSuccess');
+    if(eoiForm && eoiSuccess){
+      showTab('eoi');
+      eoiForm.style.display = 'none';
+      eoiSuccess.classList.add('show');
+    }
+  } else if(submittedType === 'enquiry'){
+    var enquiryForm = document.getElementById('enquiryForm');
+    var enquirySuccess = document.getElementById('enquirySuccess');
+    if(enquiryForm && enquirySuccess){
+      showTab('enquiry');
+      enquiryForm.style.display = 'none';
+      enquirySuccess.classList.add('show');
+    }
   }
-
-  wireForm('eoiForm', 'eoiSuccess', 'New LEAP Expression of Interest');
-  wireForm('enquiryForm', 'enquirySuccess', 'New LEAP Tutoring Enquiry');
+})();
+</script>
+</body>
+</html>
